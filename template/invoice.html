@@ -1,0 +1,237 @@
+  <div class="content-wrapper">
+    <section class="content">
+      <section class="content-header">
+      <h1>
+        Invoice
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#!/"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Invoice</li>
+      </ol>
+    </section>
+  <form id="invoiceForm">
+    <section class="invoice" ng-controller="InvoiceController"  data-ng-init="init()">
+      <div class="row invoice-info">
+        <div class="col-sm-4 invoice-col">
+          From
+          <address>
+            <strong>Admin, Inc.</strong><br>
+            795 Folsom Ave, Colombo 08<br>
+            Sri Lanka, Zip 94107<br>
+            Phone: (+94) 123-4567<br>
+            Email: info@ims.com
+          </address>
+        </div>
+
+         <div class="col-sm-4 invoice-col">
+            To
+            <div class="form-group">
+              <label class="col-md-3 control-label">Name:</label>
+                <div class="col-md-9">
+                 <input type="text" class="form-control input-sm" ng-model="details.customer" placeholder="Customer Name"/>
+               </div>
+            </div><br />
+            <div class="form-group">
+              <label class="col-md-3 control-label">Address:</label>
+                <div class="col-md-9">
+                 <input type="text" class="form-control input-sm" ng-model="details.address" placeholder="Address"/>
+               </div>
+            </div><br />
+            <div class="form-group">
+              <label class="col-md-3 control-label">Phone:</label>
+                <div class="col-md-9">
+                 <input type="text" class="form-control input-sm" ng-model="details.phone" placeholder="Phone"/>
+               </div>
+            </div>
+            
+        </div>
+
+        <div class="col-sm-4 invoice-col">
+        &nbsp;
+          <div class="form-group">
+              <label class="col-md-4 control-label">Invoice No:</label>
+              <div class="col-md-8">
+                <input type="text" class="form-control input-sm" value="#000000" disabled />
+              </div>
+          </div><br />
+            
+          <div class="form-group">
+            <label class="col-md-4 control-label">Issue Date:</label>
+            <div class="col-md-8">
+              <input type="text" class="form-control input-sm" value="01/03/2017" disabled />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th width="10%">Item No</th>
+              <th width="38%">Item Name</th>
+              <th>Qty</th>
+              <th>Item Price</th>
+              <th>Discount</th>
+              <th width="15%">Amount</th>
+              <th><input type="button" value="+" ng-click="add()" class="btn btn-primary" /></th>
+            </tr>
+            </thead>
+            <tbody class="detail">
+            
+            <tr ng-repeat="item in invoice.items">
+              <td>{{$index}}</td>
+              <td><select ng-model="item.item_id" ng-options="nam.item_no as nam.item_name for nam in names" class="form-control"></select></td>
+              <td><input type="number" ng-model="item.qty" class="form-control" /></td>
+              <td><input type="number" ng-model="item.price" class="form-control" /></td>
+              <td><input type="number" ng-model="item.dis" class="form-control" /></td>
+              <td style="padding-top: 14px;">Rs. {{item.qty * item.price}}</td>
+              <td><button type="button" ng-click="remove($index)" class="btn btn-danger"><i class="fa fa-trash-o"></i></button></td>
+            </tr>
+
+            </tbody>
+          </table>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+
+      <div class="row">
+        <!-- accepted payments column -->
+        <div class="col-xs-6">
+
+        </div>
+        <!-- /.col -->
+        <div class="col-xs-6">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <th>Subtotal:</th>
+                <td>{{subTotal()}}</td>
+              </tr>
+              <tr>
+                <th>Discount:</th>
+                <td><input class="form-control" type="number" ng-model="details.discount" ng-change="discount(subTotal())" /></td>
+              </tr>
+              <tr>
+                <th>Total Due:</th>
+                <td>{{details.total}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+
+      <!-- this row will not appear when printing -->
+      <div class="row no-print">
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-success pull-right" ng-click="addConnection(invoice.items, details)"><i class="fa fa-credit-card"></i> Submit Payment
+          </button>
+          <!-- <button type="button" class="btn btn-primary pull-right" style="margin-right: 5px;">
+            <i class="fa fa-print"></i> Print Bill
+          </button> -->
+        </div>
+      </div>
+
+    </section>
+  </form>    
+    </section>
+  </div>
+
+<script src="server.js"></script>
+<script type="text/javascript">
+ 
+ $(function() {
+
+   // $(".select2").select2();
+
+  $(".itemname").select2();
+     var n = ($('.detail tr').length-0)+1;
+    $(".itemname").on("click", function () { 
+      viewItemId(function(data){
+        
+        var data1 = $.map(data, function (obj) {
+                var value = { id : obj.item_no, text: obj.item_name }
+                return value;
+              });
+        });
+
+     });
+    $('#add').click(function(){
+        addnewrow();
+      });
+      
+    $('body').delegate('.remove','click',function(){
+        $(this).parent().parent().remove();
+      });
+        
+    $('.detail').delegate('.qty,.price,.amount,.discount','keyup',function(){
+        var tr = $(this).parent().parent();
+        var qty = tr.find('.qty').val();
+        var price = tr.find('.price').val();
+        var amount = tr.find('.amount').val();
+        var discount = tr.find('.discount').val();
+        var amt = (qty * price) - discount;
+        tr.find('.amount').val(amt);
+        total();
+      });
+        
+    $('.maindiscount').on('keyup', function(){
+      var subtotal =  $('.total').val();
+      var maindiscount =  $('.maindiscount').val();
+      var cal = (subtotal - maindiscount);
+      $('.totalDue').val(cal);
+    });    
+        
+      function total()
+      {
+        var total = 0;
+        $('.amount').each(function(index, element) {
+                    var amt = $(this).val()-0;
+          total += amt;
+                });
+        $('.total').val(total);
+        $('.totalDue').val(total);
+      }
+   });
+
+   function addnewrow()
+   {
+   }
+
+    $("#invoiceForm").on('submit', function(e) {
+      
+        var customer = $("#name").val();
+        var address = $("#address").val();
+        var phone = $("#phone").val();
+        var subtotal = $("#total").val();
+        var discount = $("#maindiscount").val();
+        var total = $("#totalDue").val();
+        
+              
+
+      /*  var invoiceDetails = { customer, address, phone, subtotal, discount, total };
+        insertInvoice(invoiceDetails, function(id) {
+
+              var item_id = $("input[name='itemname[]']").map(function(){return $(this).val();}).get();
+              var qty = $("input[name='qty[]']").map(function(){return $(this).val();}).get();
+              var price = $("input[name='price[]']").map(function(){return $(this).val();}).get();
+              var dis = $("input[name='discount[]']").map(function(){return $(this).val();}).get();
+              var amount = $("input[name='amount[]']").map(function(){return $(this).val();}).get();
+              var value = { item_id, qty, price, dis, amount };
+              insertInvoiceDetails(id.insertId, value, function(res){
+                console.log(res);
+              });
+        });*/
+        
+
+        e.preventDefault(); //STOP default action
+    });
+ 
+ </script>
+</body>
+</html>

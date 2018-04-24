@@ -1,0 +1,137 @@
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>
+        Add Items
+        <a href="#!/add-new-item"  class="btn btn-info">Add New Item</a>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#!/"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Add Items</li>
+      </ol>
+    </section>
+
+    <section class="content">
+      <div class="row">
+          
+        <div class="col-md-8 col-md-offset-2" style="padding-top: 80px;">
+        <div id="message"></div>
+          <!-- Horizontal Form -->
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Add Items</h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <form class="form-horizontal" id="addItem" ng-controller="AddStockController" data-ng-init="init()">
+              <div class="box-body">
+                <!-- <div class="form-group">
+                  <label for="invoiceno" class="col-sm-2 control-label">Invoice No</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control invoiceno" id="invoiceno" name="invoiceno" placeholder="Invoice No">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="shopname" class="col-sm-2 control-label">Suppliers</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control shopname" id="shopname" name="shopname" placeholder="Suppliers Name">
+                  </div>
+                </div> -->
+                <div class="form-group">
+                  <label for="ItemName" class="col-sm-2 control-label">Item Name</label>
+
+                  <div class="col-sm-10">
+                    <select ng-model="item.item_no" ng-options="nam.item_no as nam.item_name for nam in names" class="form-control"></select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="Quintity" class="col-sm-2 control-label">Quintity</label>
+
+                  <div class="col-sm-10">
+                    <input type="number" ng-model="item.qty" class="form-control" name="qty" placeholder="New Qty">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="Cost" class="col-sm-2 control-label">Bought Price</label>
+
+                  <div class="col-sm-10">
+                    <input type="number" ng-model="item.investment" class="form-control" name="investment" placeholder="Investment Price">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="total" class="col-sm-2 control-label">Total</label>
+
+                  <div class="col-sm-10">
+                    {{item.qty * item.investment}}
+                  </div>
+                </div>
+
+              </div>
+              <!-- /.box-body -->
+              <div class="box-footer">
+                <button type="reset" class="btn btn-default btn-lg">Clear</button>
+                <button type="submit" class="btn btn-primary btn-lg pull-right" ng-click="addStock(item)">Add to Store</button>
+              </div>
+              <!-- /.box-footer -->
+            </form>
+          </div>
+          <!-- /.box -->
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+<script src="server.js"></script>
+
+<script type="text/javascript">
+    $(".select2").select2();
+
+    /*viewItemId(function(data){
+      $.each(data, function (i, item) {
+            $('#name').append($('<option>', { 
+                value: item.item_no,
+                text : item.item_name 
+            }));
+        });
+      });
+    $('.select2').change(function(){
+          console.log('change') 
+      });
+    $('.form-horizontal').delegate('.qty,.cost','keyup',function(){
+        var qty1 = $(".qty").val();
+        var cost1 = $(".cost").val();
+        var total = (qty1 * cost1);
+        $("#total").val(total);
+    });
+    $("#addItem").on('submit', function(e) {
+        var item_no = $("#name").val();
+        var qty = $("#qty").val();
+        var investment = $("#cost").val();
+        
+        var updateData = { qty, investment };
+        insertItem(updateData, item_no, function(res){
+          console.log(res);
+          var message;
+            if(res) {
+              message = '<div class="alert alert-success alert-dismissible">'+
+                        '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                        '<h4><i class="icon fa fa-check"></i> Success!</h4></div>';
+                        setTimeout(function(){ window.location.reload(); }, 500); 
+            } else {
+              message = '<div class="alert alert-success alert-dismissible">'+
+                        '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                        '<h4><i class="icon fa fa-check"></i> Fail!</h4></div>';
+                       setTimeout(function(){ window.location.reload(); }, 500); 
+            }
+            $('#message').html(message);
+          
+        });
+        e.preventDefault();
+    });*/
+ 
+</script>
+

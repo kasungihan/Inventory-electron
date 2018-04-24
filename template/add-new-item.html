@@ -1,0 +1,193 @@
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>
+        Add New Item
+        <a href="#!/add-item"  class="btn btn-info">Add Item</a>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#!/"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#!/add-item">Add Items</a></li>
+        <li class="active">Add New Items</li>
+      </ol>
+    </section>
+
+    <section class="content">
+      <div class="row">
+          
+        <div class="col-md-10 col-md-offset-1">
+        <div id="message"></div>
+          <!-- Horizontal Form -->
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Add New Item Form</h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <form class="form-horizontal" method="post" action="add_new_item.html" id="addNewItem" name="aif">
+              <div class="box-body">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="Itemno" class="col-sm-3 control-label">Item No</label>
+
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control itemno" id="itemno" name="itemno" placeholder="Item ID" disabled>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="name" class="col-sm-3 control-label">Item Name</label>
+
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control name text-capital" ng-model="user.name" id="name" name="name" placeholder="Item Name" required />
+                    <span class="validate" ng-show="aif.name.$dirty && aif.name.$error.required">Please Enter Item Name</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="status" class="col-sm-3 control-label">Status</label>
+
+                  <div class="col-sm-9">
+                    <select class="form-control status" id="status">
+                      <option value="0">Unavailable</option>
+                      <option value="1">Available</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="sellprice" class="col-sm-3 control-label">Sale Price</label>
+
+                  <div class="col-sm-9">
+                    <input type="number" class="form-control sellprice text-capital" ng-model="user.sellprice" id="sellprice" name="sellprice" placeholder="Item Sale Price" ng-pattern="/^[0-9]{1,7}$/" required />
+                    <span class="validate" ng-show="aif.sellprice.$dirty && aif.name.$error.required">Please Enter Item Sale Price</span>
+                    <span class="validate" ng-show="aif.sellprice.$dirty && aif.sellprice.$error.required">This field is required!</span>
+                  </div>
+                </div>
+              </div>
+
+              </div>
+              <!-- /.box-body -->
+              <div class="box-footer">
+                <div class="col-md-4 col-md-offset-4">  
+                  <button type="submit" ng-disabled="aif.$invalid" class="btn btn-block btn-primary btn-lg">Add New Item</button>
+                </div>
+              </div>
+              <!-- /.box-footer -->
+            </form>
+          </div>
+          <!-- /.box -->
+          <div class="box box-success">
+            <div class="box-header">
+              <h3 class="box-title">Items Table</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table id="itemTable" class="table table-bordered table-hover">
+                <thead>
+                 <tr>
+                  <th width="160px">Item Number</th>
+                  <th>Item Name</th>
+                  <th>Status</th>
+                  <th>Sell Price</th>
+                  <th width="75px">Edit / Delete</th>
+                </tr>
+                </thead>
+                <tbody id="set_record">
+
+                </tbody>
+                <tfoot>
+                <tr>
+                  <th>Item Number</th>
+                  <th>Item Name</th>
+                  <th>Status</th>
+                  <th>Sell Price</th>
+                  <th>Edit / Delete</th>
+                </tr>
+                </tfoot>
+              </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+
+<script src="server.js"></script>
+
+<script type="text/javascript">
+$(function(){
+
+      //get last id from add new item table 
+      viewLastId(function(data) {
+        $('.name').keyup(function() {
+          var letter = $(this).val().substr(0, 1);
+          var letter = letter.toUpperCase();
+          var rowId = data[0].id;
+          var combin = letter + rowId;
+          $('.itemno').val(combin);
+        });
+
+      });
+      //intert form value to the database
+      $("#addNewItem").on('submit', function(e) {
+        
+          var item_no = $("#itemno").val();
+          var item_name = $("#name").val();
+          var status = $("#status").val();
+          var sellprice = $("#sellprice").val();
+
+          var insertnewdata = { item_no, item_name, status, sellprice };
+          var setTableId = { item_no, status }
+          insertNewItem(insertnewdata, setTableId, function(res){
+            console.log(res)
+            var message;
+            if(res) {
+              message = '<div class="alert alert-success alert-dismissible">'+
+                        '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                        '<h4><i class="icon fa fa-check"></i> Success!</h4></div>';
+                        setTimeout(function(){ window.location.reload(); }, 500); 
+            } else {
+              message = '<div class="alert alert-success alert-dismissible">'+
+                        '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                        '<h4><i class="icon fa fa-check"></i> Fail!</h4></div>';
+                       setTimeout(function(){ window.location.reload(); }, 500); 
+            }
+            $('#message').html(message);
+          });
+
+          e.preventDefault(); //STOP default action
+
+      });
+      // View to table Item Name Other things
+      viewNewItem(function(data){
+        //Table jquery plugin function
+        $('#itemTable').DataTable({
+          data: data,
+          "columns": [
+            { "data": "item_no" },
+            { "data": "item_name" },
+            { render: function (a, b, data, d) {
+                if(data.status == 0) {
+                  return '<span class="label label-danger">Unavailable</span>'
+                } else {
+                  return '<span class="label label-success">Available</span>'
+                }
+              } 
+            },
+            { "data": "sellprice" },
+            { render: function (a, b, data, d) {
+                return '<button type="submit" value=' + data.id + ' class="btn btn-info"><i class="fa fa-pencil-square-o"></i></button><button type="submit" value=' + data.id + ' class="btn btn-danger pull-right"><i class="fa fa-trash-o"></i></button>'
+              }
+            }
+          ],
+          "ordering": false
+        });
+      });
+});
+ 
+</script>
+</body>
+</html>
